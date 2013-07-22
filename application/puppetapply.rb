@@ -44,7 +44,7 @@ EOF
 			puts "Host: #{result[:sender]}"
 			puts "Host: #{result[:exitcode]}"
 			puts "Output:\n#{result[:output]}" unless result[:output].empty?
-			puts result[:error] unless result[:error]
+			puts result[:error] unless result[:error].empty?
 		end
         puts "\n"
     end
