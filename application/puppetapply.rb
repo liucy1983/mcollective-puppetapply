@@ -29,25 +29,21 @@ EOF
     mc.agent_filter(configuration[:agent])
     mc.discover :verbose => true
 
-    puts "\n"
-
+    results = []
     mc.apply(:code => code) do |node|
-    	result = Hash.new()
-		result[:sender] = node[:senderid]
-    	result[:exitcode] = node[:body][:data][:exitcode]
-    	result[:output] = node[:body][:data][:stdout]
-    	result[:error] = node[:body][:data][:stderr]
+    	result = {:sender => node[:senderid],
+    	  :statuscode => node[:body][:data][:exitcode],
+    	  :statusmsg => node[:body][:data][:stdout] + node[:body][:data][:stderr]}
 		
-		if options[:output_format] == "json"
-			puts result.to_json
-		else
-			puts "Host: #{result[:sender]}"
-			puts "Host: #{result[:exitcode]}"
-			puts "Output:\n#{result[:output]}" unless result[:output].empty?
-			puts result[:error] unless result[:error].empty?
-		end
-        puts "\n"
+		  if options[:output_format] == "json"
+        results.push result
+		  else
+        puts "Host: #{result[:sender]}"
+        puts "Statuscode: #{result[:statuscode]}"
+        puts "Output:\n#{result[:statusmsg]}" unless result[:statusmsg].empty?
+		  end
     end
+    puts results.to_json if options[:output_format] == 'json'
 
     mc.disconnect
   end
